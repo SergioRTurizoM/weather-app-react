@@ -1,11 +1,13 @@
 import axios from "axios";
 import { React, useEffect, useState, Component } from "react";
+import Swal from "sweetalert2";
 
 
 const Geolocation = () => {
   const [position, setPosition] = useState(0);
   const [information, setInformation] = useState(0);
   const [isKelvin, setIsKelvin] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
   console.log(information);
 
@@ -21,9 +23,9 @@ const Geolocation = () => {
       const latitude = crd.latitude;
       const longitude = crd.longitude;
       const accuracy = crd.accuracy;
-      console.log(`Latitude: ${latitude}`);
-      console.log(`Longitude: ${longitude}`);
-      console.log(`More or less: ${accuracy} meters`);
+      // console.log(`Latitude: ${latitude}`);
+      // console.log(`Longitude: ${longitude}`);
+      // console.log(`More or less: ${accuracy} meters`);
       setPosition(crd);
       return crd;
     };
@@ -47,15 +49,19 @@ const Geolocation = () => {
    
 
     const apiRequest = async()=> {
+
         try {
           const resp = await axios.get(urlApi)
           setInformation(resp.data)
+          setIsLoading(false)
+
+        
         } catch (err) {
           console.log(err);
-          // if(err){
-          //     // console.log(err);
-          //   location.reload()
-          // }
+          if(err){
+              console.log(err);
+            // location.reload()
+          }
         }
     }
     apiRequest();
@@ -68,14 +74,21 @@ const Geolocation = () => {
   let now  = today.toLocaleString('en-US', options);
   console.log(now);
 
-  console.log(information?.weather?.[0]?.icon);
 
 
 
   return (
     <div>
-      <video autoPlay={true} loop={true} src="../assets/videos/03n.mp4">
-      </video>
+      {isLoading ? (
+        <>
+           <video autoPlay={true} loop={true} muted={true} src="./src/assets/videos/04d.mp4">
+           </video>  
+        <h1>Loading...</h1>
+        </>
+      ) : (
+      <>
+       <video autoPlay={true} loop={true} muted={true} src={`./src/assets/videos/${information?.weather?.[0]?.icon}.mp4`}>
+    </video>  
     <div className="Container">
       <div className="infoMain">
       <p>Country: {information?.sys?.country}</p>
@@ -93,6 +106,20 @@ const Geolocation = () => {
       <p>Humidity: {information?.main?.humidity}</p> 
       <button type="" onClick={()=>setIsKelvin(!isKelvin)}> Change to {isKelvin ? 'Kelvin' : 'Celsius' }</button>
     </div>
+        
+        
+        
+        
+        
+        
+        
+        </>
+
+
+
+
+      )}
+     
     </div>
   );
 };
